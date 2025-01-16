@@ -1,6 +1,6 @@
 {
   "name": "http-status-antinotion",
-  "version": "0.1.3-beta",
+  "version": "0.1.7-beta",
   "description": "",
   "main": "dist/es5/index.cjs",
   "module": "dist/es6/index.js",

@@ -1,4 +1,4 @@
-class IPaging {
+export class IPaging {
     page?: number;
     limit?: number;
     total?: number;
@@ -10,7 +10,7 @@ class IPaging {
     }
 }
 
-class IResponse<T = any> {
+export class IResponse<T = any> {
     status: number;
     message: string;
     data?: T;
@@ -24,33 +24,27 @@ class IResponse<T = any> {
     }
 }
 
-function CustomResponse<T = any>(
-    status: number,
-    message: string,
-    data?: T,
-    paging?: IPaging | null
-): IResponse<T> {
+
+function CustomResponse<T>(status: number, message: string, data: T | null = null, paging: IPaging | null = null): IResponse<T> {
     const response: IResponse<T> = { status, message };
 
-    if (data !== null && data !== undefined) {
-        if (typeof data !== typeof ({} as T)) {
-            console.error(`Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`);
-            response.message = `Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`;
-            return response;
-        }
-        response.data = data;
+if (data !== null && data !== undefined) {
+    if (!(data as T)) {
+        console.error(`Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`);
+        response.message = `Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`;
+        return response;
     }
-
-    if (data !== null && data !== undefined) {
-        response.data = data;
-    }
-
-    if (paging !== null && paging !== undefined) {
-        response.paging = paging;
-    }
-
-    return response;
+    response.data = data;
 }
+
+if (paging !== null && paging !== undefined) {
+    response.paging = paging;
+}
+
+return response;
+}
+
+
 
 export class HttpStatus {
 
@@ -86,117 +80,248 @@ export class HttpStatus {
     static readonly SERVICE_UNAVAILABLE = {code: 503, message: "Service Unavailable"};
     static readonly GATEWAY_TIMEOUT = {code: 504, message: "Gateway Timeout"};
 
+    private static checkMessage(message : any) : boolean{
+        return message !== null && message !== undefined;
+    }
 
-    static CustomResponse(status: number, message: string, data: any | null = null, paging: IPaging | null = null) {
+    static CustomResponseType<T>(status: number , message: string, data: T | null = null, paging: IPaging | null = null) : IResponse<T> {
         return CustomResponse(status, message, data, paging);
     }
 
-    static ContinueResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.CONTINUE.code, this.CONTINUE.message, data, paging);
+    static ContinueResponse<T>(message: string | null = null, data: T | null = null, paging: IPaging | null = null): IResponse<T> {
+        let mess: string = this.checkMessage(message) ? message! : this.CONTINUE.message;
+        return this.CustomResponseType(this.CONTINUE.code, mess, data, paging);
     }
 
-    static SwitchingProtocolsResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.SWITCHING_PROTOCOLS.code, this.SWITCHING_PROTOCOLS.message, data, paging);
+    static SwitchingProtocolsResponse<T>(message: string | null = null,data: T | null = null, paging: IPaging | null = null): IResponse<T> {
+        let mess : string | null = this.checkMessage(message) ? message! :this.SWITCHING_PROTOCOLS.message;
+        return this.CustomResponseType(this.SWITCHING_PROTOCOLS.code, mess, data, paging);
     }
 
-    static ProcessingResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.PROCESSING.code, this.PROCESSING.message, data, paging);
+
+    static ProcessingResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.PROCESSING.message;
+        return this.CustomResponseType(this.PROCESSING.code, mess, data, paging);
     }
 
-    static OKResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.OK.code, this.OK.message, data, paging);
+    static OKResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.OK.message;
+        return this.CustomResponseType(this.OK.code, mess, data, paging);
     }
 
-    static CreatedResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.CREATED.code, this.CREATED.message, data, paging);
+    static CreatedResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.CREATED.message;
+        return this.CustomResponseType(this.CREATED.code, mess, data, paging);
     }
 
-    static AcceptedResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.ACCEPTED.code, this.ACCEPTED.message, data, paging);
+    static AcceptedResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.ACCEPTED.message;
+        return this.CustomResponseType(this.ACCEPTED.code, mess, data, paging);
     }
 
-    static NonAuthoritativeInformationResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.NON_AUTHORITATIVE_INFORMATION.code, this.NON_AUTHORITATIVE_INFORMATION.message, data, paging);
+    static NonAuthoritativeInformationResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.NON_AUTHORITATIVE_INFORMATION.message;
+        return this.CustomResponseType(this.NON_AUTHORITATIVE_INFORMATION.code, mess, data, paging);
     }
 
-    static NoContentResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.NO_CONTENT.code, this.NO_CONTENT.message, data, paging);
+    static NoContentResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.NO_CONTENT.message;
+        return this.CustomResponseType(this.NO_CONTENT.code, mess, data, paging);
     }
 
-    static ResetContentResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.RESET_CONTENT.code, this.RESET_CONTENT.message, data, paging);
+    static ResetContentResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.RESET_CONTENT.message;
+        return this.CustomResponseType(this.RESET_CONTENT.code, mess, data, paging);
     }
 
-    static PartialContentResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.PARTIAL_CONTENT.code, this.PARTIAL_CONTENT.message, data, paging);
+    static PartialContentResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.PARTIAL_CONTENT.message;
+        return this.CustomResponseType(this.PARTIAL_CONTENT.code, mess, data, paging);
     }
 
-    static MultipleChoicesResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.MULTIPLE_CHOICES.code, this.MULTIPLE_CHOICES.message, data, paging);
+    static MultipleChoicesResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.MULTIPLE_CHOICES.message;
+        return this.CustomResponseType(this.MULTIPLE_CHOICES.code, mess, data, paging);
     }
 
-    static MovedPermanentlyResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.MOVED_PERMANENTLY.code, this.MOVED_PERMANENTLY.message, data, paging);
+    static MovedPermanentlyResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.MOVED_PERMANENTLY.message;
+        return this.CustomResponseType(this.MOVED_PERMANENTLY.code, mess, data, paging);
     }
 
-    static FoundResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.FOUND.code, this.FOUND.message, data, paging);
+    static FoundResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.FOUND.message;
+        return this.CustomResponseType(this.FOUND.code, mess, data, paging);
     }
 
-    static SeeOtherResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.SEE_OTHER.code, this.SEE_OTHER.message, data, paging);
+    static SeeOtherResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.SEE_OTHER.message;
+        return this.CustomResponseType(this.SEE_OTHER.code, mess, data, paging);
     }
 
-    static NotModifiedResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.NOT_MODIFIED.code, this.NOT_MODIFIED.message, data, paging);
+    static NotModifiedResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.NOT_MODIFIED.message;
+        return this.CustomResponseType(this.NOT_MODIFIED.code, mess, data, paging);
     }
 
-    static TemporaryRedirectResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.TEMPORARY_REDIRECT.code, this.TEMPORARY_REDIRECT.message, data, paging);
+    static TemporaryRedirectResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.TEMPORARY_REDIRECT.message;
+        return this.CustomResponseType(this.TEMPORARY_REDIRECT.code, mess, data, paging);
     }
 
-    static PermanentRedirectResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.PERMANENT_REDIRECT.code, this.PERMANENT_REDIRECT.message, data, paging);
+    static PermanentRedirectResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.PERMANENT_REDIRECT.message;
+        return this.CustomResponseType(this.PERMANENT_REDIRECT.code, mess, data, paging);
     }
 
-    static BadRequestResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.BAD_REQUEST.code, this.BAD_REQUEST.message, data, paging);
+    static BadRequestResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.BAD_REQUEST.message;
+        return this.CustomResponseType(this.BAD_REQUEST.code, mess, data, paging);
     }
 
-    static UnauthorizedResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.UNAUTHORIZED.code, this.UNAUTHORIZED.message, data, paging);
+    static UnauthorizedResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.UNAUTHORIZED.message;
+        return this.CustomResponseType(this.UNAUTHORIZED.code, mess, data, paging);
     }
 
-    static PaymentRequiredResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.PAYMENT_REQUIRED.code, this.PAYMENT_REQUIRED.message, data, paging);
+    static PaymentRequiredResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.PAYMENT_REQUIRED.message;
+        return this.CustomResponseType(this.PAYMENT_REQUIRED.code, mess, data, paging);
     }
 
-    static ForbiddenResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.FORBIDDEN.code, this.FORBIDDEN.message, data, paging);
+    static ForbiddenResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.FORBIDDEN.message;
+        return this.CustomResponseType(this.FORBIDDEN.code, mess, data, paging);
     }
 
-    static NotFoundResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.NOT_FOUND.code, this.NOT_FOUND.message, data, paging);
+    static NotFoundResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.NOT_FOUND.message;
+        return this.CustomResponseType(this.NOT_FOUND.code, mess, data, paging);
     }
 
-    static InternalServerErrorResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.INTERNAL_SERVER_ERROR.code, this.INTERNAL_SERVER_ERROR.message, data, paging);
+    static InternalServerErrorResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.INTERNAL_SERVER_ERROR.message;
+        return this.CustomResponseType(this.INTERNAL_SERVER_ERROR.code, mess, data, paging);
     }
 
-    static NotImplementedResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.NOT_IMPLEMENTED.code, this.NOT_IMPLEMENTED.message, data, paging);
+    static NotImplementedResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.NOT_IMPLEMENTED.message;
+        return this.CustomResponseType(this.NOT_IMPLEMENTED.code, mess, data, paging);
     }
 
-    static BadGatewayResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.BAD_GATEWAY.code, this.BAD_GATEWAY.message, data, paging);
+    static BadGatewayResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.BAD_GATEWAY.message;
+        return this.CustomResponseType(this.BAD_GATEWAY.code, mess, data, paging);
     }
 
-    static ServiceUnavailableResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.SERVICE_UNAVAILABLE.code, this.SERVICE_UNAVAILABLE.message, data, paging);
+    static ServiceUnavailableResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.SERVICE_UNAVAILABLE.message;
+        return this.CustomResponseType(this.SERVICE_UNAVAILABLE.code, mess, data, paging);
     }
 
-    static GatewayTimeoutResponse(data: any | null = null, paging: IPaging | null = null): IResponse {
-        return CustomResponse(this.GATEWAY_TIMEOUT.code, this.GATEWAY_TIMEOUT.message, data, paging);
+    static GatewayTimeoutResponse<T>(
+        message: string | null = null,
+        data: T | null = null,
+        paging: IPaging | null = null
+    ): IResponse<T> {
+        const mess : string | null = this.checkMessage(message) ? message! : this.GATEWAY_TIMEOUT.message;
+        return this.CustomResponseType(this.GATEWAY_TIMEOUT.code, mess, data, paging);
     }
 }
 
