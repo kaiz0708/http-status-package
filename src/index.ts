@@ -1,327 +1,385 @@
-export class IPaging {
-    page?: number;
-    limit?: number;
-    total?: number;
+export class Paging {
+    private page?: number;
+    private size?: number;
+    private total?: number;
 
-    constructor(page?: number, limit?: number, total?: number) {
+    constructor(page?: number, size?: number, total?: number) {
         this.page = page;
-        this.limit = limit;
+        this.size = size;
         this.total = total;
     }
+
+    setPage(page : number){
+        this.page = page;
+        return this;
+    }
+
+    setSize(size : number){
+        this.size = size;
+        return this;
+    }
+
+    setTotal(total : number){
+        this.total = total;
+        return this;
+    }
+
+    getPage() : number | undefined {
+        return this.page;
+    }
+
+    getSize() : number | undefined {
+        return this.size;
+    }
+
+    getTotal() : number | undefined {
+        return this.total;
+    }
+}
+export class Response<T> {
+    private status?: number;
+    private message?: string;
+    private data?: T;
+    private paging?: Paging;
+    private metadata?: Record<string, any>;
+    private errors?: any[];
+    private timestamp?: number;
+    private path?: string;
+
+    constructor(builder: ResponseBuilder<T>) {
+        this.status = builder.getStatus();
+        this.message = builder.getMessage();
+        this.data = builder.getData();
+        this.paging = builder.getPaging();
+        this.metadata = builder.getMetadata();
+    }
 }
 
-export class IResponse<T = any> {
-    status: number;
-    message: string;
-    data?: T;
-    paging?: IPaging | null;
 
-    constructor(status: number, message: string, data?: T, paging?: IPaging | null) {
+export class ResponseBuilder<T> {
+    private status?: number;
+    private message?: string;
+    private data?: T;
+    private paging?: Paging;
+    private metadata?: Record<string, any>;
+
+    constructor(status?: number, message?: string) {
         this.status = status;
         this.message = message;
-        this.data = data;
-        this.paging = paging;
+    }
+
+    static customResponse<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>();
+    }
+
+    // Informational Responses
+    static continue<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.CONTINUE, HttpStatusMessage.CONTINUE);
+    }
+
+    static switchingProtocols<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.SWITCHING_PROTOCOLS, HttpStatusMessage.SWITCHING_PROTOCOLS);
+    }
+
+    static processing<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.PROCESSING, HttpStatusMessage.PROCESSING);
+    }
+
+    // Successful Responses
+    static ok<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.OK, HttpStatusMessage.OK);
+    }
+
+    static created<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.CREATED, HttpStatusMessage.CREATED);
+    }
+
+    static accepted<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.ACCEPTED, HttpStatusMessage.ACCEPTED);
+    }
+
+    static nonAuthoritativeInformation<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(
+            HttpStatusCode.NON_AUTHORITATIVE_INFORMATION,
+            HttpStatusMessage.NON_AUTHORITATIVE_INFORMATION
+        );
+    }
+
+    static noContent<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.NO_CONTENT, HttpStatusMessage.NO_CONTENT);
+    }
+
+    static resetContent<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.RESET_CONTENT, HttpStatusMessage.RESET_CONTENT);
+    }
+
+    static partialContent<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.PARTIAL_CONTENT, HttpStatusMessage.PARTIAL_CONTENT);
+    }
+
+    // Redirection Responses
+    static multipleChoices<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.MULTIPLE_CHOICES, HttpStatusMessage.MULTIPLE_CHOICES);
+    }
+
+    static movedPermanently<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.MOVED_PERMANENTLY, HttpStatusMessage.MOVED_PERMANENTLY);
+    }
+
+    static found<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.FOUND, HttpStatusMessage.FOUND);
+    }
+
+    static seeOther<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.SEE_OTHER, HttpStatusMessage.SEE_OTHER);
+    }
+
+    static notModified<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.NOT_MODIFIED, HttpStatusMessage.NOT_MODIFIED);
+    }
+
+    static temporaryRedirect<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.TEMPORARY_REDIRECT, HttpStatusMessage.TEMPORARY_REDIRECT);
+    }
+
+    static permanentRedirect<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.PERMANENT_REDIRECT, HttpStatusMessage.PERMANENT_REDIRECT);
+    }
+
+    // Client Error Responses
+    static badRequest<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.BAD_REQUEST, HttpStatusMessage.BAD_REQUEST);
+    }
+
+    static unauthorized<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.UNAUTHORIZED, HttpStatusMessage.UNAUTHORIZED);
+    }
+
+    static paymentRequired<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.PAYMENT_REQUIRED, HttpStatusMessage.PAYMENT_REQUIRED);
+    }
+
+    static forbidden<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.FORBIDDEN, HttpStatusMessage.FORBIDDEN);
+    }
+
+    static notFound<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.NOT_FOUND, HttpStatusMessage.NOT_FOUND);
+    }
+
+    // Server Error Responses
+    static internalServerError<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(
+            HttpStatusCode.INTERNAL_SERVER_ERROR,
+            HttpStatusMessage.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    static notImplemented<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.NOT_IMPLEMENTED, HttpStatusMessage.NOT_IMPLEMENTED);
+    }
+
+    static badGateway<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.BAD_GATEWAY, HttpStatusMessage.BAD_GATEWAY);
+    }
+
+    static serviceUnavailable<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(
+            HttpStatusCode.SERVICE_UNAVAILABLE,
+            HttpStatusMessage.SERVICE_UNAVAILABLE
+        );
+    }
+
+    static gatewayTimeout<T = never>() : ResponseBuilder<T> {
+        return new ResponseBuilder<T>(HttpStatusCode.GATEWAY_TIMEOUT, HttpStatusMessage.GATEWAY_TIMEOUT);
+    }
+
+
+    setData(data: T) {
+        if (data !== null && data !== undefined) {
+            if (!(data instanceof Object && typeof data === 'object')) {
+                console.error(`Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`);
+                this.message = `Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`;
+            } else {
+                this.data = data;
+            }
+        }
+        return this;
+    }
+
+    setMessage(msg: string) {
+        this.message = msg;
+        return this;
+    }
+
+    setStatus(status: number) {
+        this.status = status;
+        return this;
+    }
+
+    setPaging(paging: Paging) {
+        if (paging !== null && paging !== undefined) {
+            this.paging = paging;
+        }
+        return this;
+    }
+
+    setMetadata(metadata: Record<string, any>) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    addMetadataField(key: string, value: any) {
+        if (!this.metadata) {
+            this.metadata = {};
+        }
+        this.metadata[key] = value;
+        return this;
+    }
+
+    build(): Response<T> {
+        return new Response(this);
+    }
+
+    getMetadata(): any | undefined {
+        return this.metadata;
+    }
+
+    getMetadataField(key : string): any {
+        if (!this.metadata) {
+            return undefined;
+        }
+        return this.metadata[key];
+    }
+
+    getStatus(): number | undefined {
+        return this.status;
+    }
+
+    getMessage(): string | undefined {
+        return this.message;
+    }
+
+    getData(): T | undefined {
+        return this.data;
+    }
+
+    getPaging(): Paging | undefined {
+        return this.paging;
     }
 }
 
+export enum HttpStatusCode {
+    CONTINUE = 100,
+    SWITCHING_PROTOCOLS = 101,
+    PROCESSING = 102,
 
-function CustomResponse<T>(status: number, message: string, data: T | null = null, paging: IPaging | null = null): IResponse<T> {
-    const response: IResponse<T> = { status, message };
+    OK = 200,
+    CREATED = 201,
+    ACCEPTED = 202,
+    NON_AUTHORITATIVE_INFORMATION = 203,
+    NO_CONTENT = 204,
+    RESET_CONTENT = 205,
+    PARTIAL_CONTENT = 206,
 
-if (data !== null && data !== undefined) {
-    if (!(data as T)) {
-        console.error(`Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`);
-        response.message = `Invalid data type. Expected ${typeof ({} as T)}, but got ${typeof data}`;
-        return response;
-    }
-    response.data = data;
+    MULTIPLE_CHOICES = 300,
+    MOVED_PERMANENTLY = 301,
+    FOUND = 302,
+    SEE_OTHER = 303,
+    NOT_MODIFIED = 304,
+    TEMPORARY_REDIRECT = 307,
+    PERMANENT_REDIRECT = 308,
+
+    BAD_REQUEST = 400,
+    UNAUTHORIZED = 401,
+    PAYMENT_REQUIRED = 402,
+    FORBIDDEN = 403,
+    NOT_FOUND = 404,
+
+    INTERNAL_SERVER_ERROR = 500,
+    NOT_IMPLEMENTED = 501,
+    BAD_GATEWAY = 502,
+    SERVICE_UNAVAILABLE = 503,
+    GATEWAY_TIMEOUT = 504,
 }
 
-if (paging !== null && paging !== undefined) {
-    response.paging = paging;
+export enum HttpStatusMessage {
+    CONTINUE = "Continue",
+    SWITCHING_PROTOCOLS = "Switching Protocols",
+    PROCESSING = "Processing",
+
+    OK = "OK",
+    CREATED = "Created",
+    ACCEPTED = "Accepted",
+    NON_AUTHORITATIVE_INFORMATION = "Non-Authoritative Information",
+    NO_CONTENT = "No Content",
+    RESET_CONTENT = "Reset Content",
+    PARTIAL_CONTENT = "Partial Content",
+
+    MULTIPLE_CHOICES = "Multiple Choices",
+    MOVED_PERMANENTLY = "Moved Permanently",
+    FOUND = "Found",
+    SEE_OTHER = "See Other",
+    NOT_MODIFIED = "Not Modified",
+    TEMPORARY_REDIRECT = "Temporary Redirect",
+    PERMANENT_REDIRECT = "Permanent Redirect",
+
+    BAD_REQUEST = "Bad Request",
+    UNAUTHORIZED = "Unauthorized",
+    PAYMENT_REQUIRED = "Payment Required",
+    FORBIDDEN = "Forbidden",
+    NOT_FOUND = "Not Found",
+
+    INTERNAL_SERVER_ERROR = "Internal Server Error",
+    NOT_IMPLEMENTED = "Not Implemented",
+    BAD_GATEWAY = "Bad Gateway",
+    SERVICE_UNAVAILABLE = "Service Unavailable",
+    GATEWAY_TIMEOUT = "Gateway Timeout",
 }
 
-return response;
+export function getHttpStatusMessage(code: HttpStatusCode): HttpStatusMessage | undefined {
+    const mapping: Record<HttpStatusCode, HttpStatusMessage> = {
+        [HttpStatusCode.CONTINUE]: HttpStatusMessage.CONTINUE,
+        [HttpStatusCode.SWITCHING_PROTOCOLS]: HttpStatusMessage.SWITCHING_PROTOCOLS,
+        [HttpStatusCode.PROCESSING]: HttpStatusMessage.PROCESSING,
+
+        [HttpStatusCode.OK]: HttpStatusMessage.OK,
+        [HttpStatusCode.CREATED]: HttpStatusMessage.CREATED,
+        [HttpStatusCode.ACCEPTED]: HttpStatusMessage.ACCEPTED,
+        [HttpStatusCode.NON_AUTHORITATIVE_INFORMATION]: HttpStatusMessage.NON_AUTHORITATIVE_INFORMATION,
+        [HttpStatusCode.NO_CONTENT]: HttpStatusMessage.NO_CONTENT,
+        [HttpStatusCode.RESET_CONTENT]: HttpStatusMessage.RESET_CONTENT,
+        [HttpStatusCode.PARTIAL_CONTENT]: HttpStatusMessage.PARTIAL_CONTENT,
+
+        [HttpStatusCode.MULTIPLE_CHOICES]: HttpStatusMessage.MULTIPLE_CHOICES,
+        [HttpStatusCode.MOVED_PERMANENTLY]: HttpStatusMessage.MOVED_PERMANENTLY,
+        [HttpStatusCode.FOUND]: HttpStatusMessage.FOUND,
+        [HttpStatusCode.SEE_OTHER]: HttpStatusMessage.SEE_OTHER,
+        [HttpStatusCode.NOT_MODIFIED]: HttpStatusMessage.NOT_MODIFIED,
+        [HttpStatusCode.TEMPORARY_REDIRECT]: HttpStatusMessage.TEMPORARY_REDIRECT,
+        [HttpStatusCode.PERMANENT_REDIRECT]: HttpStatusMessage.PERMANENT_REDIRECT,
+
+        [HttpStatusCode.BAD_REQUEST]: HttpStatusMessage.BAD_REQUEST,
+        [HttpStatusCode.UNAUTHORIZED]: HttpStatusMessage.UNAUTHORIZED,
+        [HttpStatusCode.PAYMENT_REQUIRED]: HttpStatusMessage.PAYMENT_REQUIRED,
+        [HttpStatusCode.FORBIDDEN]: HttpStatusMessage.FORBIDDEN,
+        [HttpStatusCode.NOT_FOUND]: HttpStatusMessage.NOT_FOUND,
+
+        [HttpStatusCode.INTERNAL_SERVER_ERROR]: HttpStatusMessage.INTERNAL_SERVER_ERROR,
+        [HttpStatusCode.NOT_IMPLEMENTED]: HttpStatusMessage.NOT_IMPLEMENTED,
+        [HttpStatusCode.BAD_GATEWAY]: HttpStatusMessage.BAD_GATEWAY,
+        [HttpStatusCode.SERVICE_UNAVAILABLE]: HttpStatusMessage.SERVICE_UNAVAILABLE,
+        [HttpStatusCode.GATEWAY_TIMEOUT]: HttpStatusMessage.GATEWAY_TIMEOUT,
+    };
+
+    return mapping[code];
 }
 
 
 
-export class HttpStatus {
-
-    static readonly CONTINUE = {code: 100, message: "Continue"};
-    static readonly SWITCHING_PROTOCOLS = {code: 101, message: "Switching Protocols"};
-    static readonly PROCESSING = {code: 102, message: "Processing"};
-
-    static readonly OK = {code: 200, message: "OK"};
-    static readonly CREATED = {code: 201, message: "Created"};
-    static readonly ACCEPTED = {code: 202, message: "Accepted"};
-    static readonly NON_AUTHORITATIVE_INFORMATION = {code: 203, message: "Non-Authoritative Information"};
-    static readonly NO_CONTENT = {code: 204, message: "No Content"};
-    static readonly RESET_CONTENT = {code: 205, message: "Reset Content"};
-    static readonly PARTIAL_CONTENT = {code: 206, message: "Partial Content"};
-
-    static readonly MULTIPLE_CHOICES = {code: 300, message: "Multiple Choices"};
-    static readonly MOVED_PERMANENTLY = {code: 301, message: "Moved Permanently"};
-    static readonly FOUND = {code: 302, message: "Found"};
-    static readonly SEE_OTHER = {code: 303, message: "See Other"};
-    static readonly NOT_MODIFIED = {code: 304, message: "Not Modified"};
-    static readonly TEMPORARY_REDIRECT = {code: 307, message: "Temporary Redirect"};
-    static readonly PERMANENT_REDIRECT = {code: 308, message: "Permanent Redirect"};
-
-    static readonly BAD_REQUEST = {code: 400, message: "Bad Request"};
-    static readonly UNAUTHORIZED = {code: 401, message: "Unauthorized"};
-    static readonly PAYMENT_REQUIRED = {code: 402, message: "Payment Required"};
-    static readonly FORBIDDEN = {code: 403, message: "Forbidden"};
-    static readonly NOT_FOUND = {code: 404, message: "Not Found"};
-
-    static readonly INTERNAL_SERVER_ERROR = {code: 500, message: "Internal Server Error"};
-    static readonly NOT_IMPLEMENTED = {code: 501, message: "Not Implemented"};
-    static readonly BAD_GATEWAY = {code: 502, message: "Bad Gateway"};
-    static readonly SERVICE_UNAVAILABLE = {code: 503, message: "Service Unavailable"};
-    static readonly GATEWAY_TIMEOUT = {code: 504, message: "Gateway Timeout"};
-
-    private static checkMessage(message : any) : boolean{
-        return message !== null && message !== undefined;
-    }
-
-    static CustomResponseType<T>(status: number , message: string, data: T | null = null, paging: IPaging | null = null) : IResponse<T> {
-        return CustomResponse(status, message, data, paging);
-    }
-
-    static ContinueResponse<T>(message: string | null = null, data: T | null = null, paging: IPaging | null = null): IResponse<T> {
-        let mess: string = this.checkMessage(message) ? message! : this.CONTINUE.message;
-        return this.CustomResponseType(this.CONTINUE.code, mess, data, paging);
-    }
-
-    static SwitchingProtocolsResponse<T>(message: string | null = null,data: T | null = null, paging: IPaging | null = null): IResponse<T> {
-        let mess : string | null = this.checkMessage(message) ? message! :this.SWITCHING_PROTOCOLS.message;
-        return this.CustomResponseType(this.SWITCHING_PROTOCOLS.code, mess, data, paging);
-    }
 
 
-    static ProcessingResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.PROCESSING.message;
-        return this.CustomResponseType(this.PROCESSING.code, mess, data, paging);
-    }
 
-    static OKResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.OK.message;
-        return this.CustomResponseType(this.OK.code, mess, data, paging);
-    }
 
-    static CreatedResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.CREATED.message;
-        return this.CustomResponseType(this.CREATED.code, mess, data, paging);
-    }
 
-    static AcceptedResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.ACCEPTED.message;
-        return this.CustomResponseType(this.ACCEPTED.code, mess, data, paging);
-    }
-
-    static NonAuthoritativeInformationResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.NON_AUTHORITATIVE_INFORMATION.message;
-        return this.CustomResponseType(this.NON_AUTHORITATIVE_INFORMATION.code, mess, data, paging);
-    }
-
-    static NoContentResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.NO_CONTENT.message;
-        return this.CustomResponseType(this.NO_CONTENT.code, mess, data, paging);
-    }
-
-    static ResetContentResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.RESET_CONTENT.message;
-        return this.CustomResponseType(this.RESET_CONTENT.code, mess, data, paging);
-    }
-
-    static PartialContentResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.PARTIAL_CONTENT.message;
-        return this.CustomResponseType(this.PARTIAL_CONTENT.code, mess, data, paging);
-    }
-
-    static MultipleChoicesResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.MULTIPLE_CHOICES.message;
-        return this.CustomResponseType(this.MULTIPLE_CHOICES.code, mess, data, paging);
-    }
-
-    static MovedPermanentlyResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.MOVED_PERMANENTLY.message;
-        return this.CustomResponseType(this.MOVED_PERMANENTLY.code, mess, data, paging);
-    }
-
-    static FoundResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.FOUND.message;
-        return this.CustomResponseType(this.FOUND.code, mess, data, paging);
-    }
-
-    static SeeOtherResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.SEE_OTHER.message;
-        return this.CustomResponseType(this.SEE_OTHER.code, mess, data, paging);
-    }
-
-    static NotModifiedResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.NOT_MODIFIED.message;
-        return this.CustomResponseType(this.NOT_MODIFIED.code, mess, data, paging);
-    }
-
-    static TemporaryRedirectResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.TEMPORARY_REDIRECT.message;
-        return this.CustomResponseType(this.TEMPORARY_REDIRECT.code, mess, data, paging);
-    }
-
-    static PermanentRedirectResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.PERMANENT_REDIRECT.message;
-        return this.CustomResponseType(this.PERMANENT_REDIRECT.code, mess, data, paging);
-    }
-
-    static BadRequestResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.BAD_REQUEST.message;
-        return this.CustomResponseType(this.BAD_REQUEST.code, mess, data, paging);
-    }
-
-    static UnauthorizedResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.UNAUTHORIZED.message;
-        return this.CustomResponseType(this.UNAUTHORIZED.code, mess, data, paging);
-    }
-
-    static PaymentRequiredResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.PAYMENT_REQUIRED.message;
-        return this.CustomResponseType(this.PAYMENT_REQUIRED.code, mess, data, paging);
-    }
-
-    static ForbiddenResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.FORBIDDEN.message;
-        return this.CustomResponseType(this.FORBIDDEN.code, mess, data, paging);
-    }
-
-    static NotFoundResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.NOT_FOUND.message;
-        return this.CustomResponseType(this.NOT_FOUND.code, mess, data, paging);
-    }
-
-    static InternalServerErrorResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.INTERNAL_SERVER_ERROR.message;
-        return this.CustomResponseType(this.INTERNAL_SERVER_ERROR.code, mess, data, paging);
-    }
-
-    static NotImplementedResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.NOT_IMPLEMENTED.message;
-        return this.CustomResponseType(this.NOT_IMPLEMENTED.code, mess, data, paging);
-    }
-
-    static BadGatewayResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.BAD_GATEWAY.message;
-        return this.CustomResponseType(this.BAD_GATEWAY.code, mess, data, paging);
-    }
-
-    static ServiceUnavailableResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.SERVICE_UNAVAILABLE.message;
-        return this.CustomResponseType(this.SERVICE_UNAVAILABLE.code, mess, data, paging);
-    }
-
-    static GatewayTimeoutResponse<T>(
-        message: string | null = null,
-        data: T | null = null,
-        paging: IPaging | null = null
-    ): IResponse<T> {
-        const mess : string | null = this.checkMessage(message) ? message! : this.GATEWAY_TIMEOUT.message;
-        return this.CustomResponseType(this.GATEWAY_TIMEOUT.code, mess, data, paging);
-    }
-}
 
