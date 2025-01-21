@@ -1,8 +1,8 @@
 {
-  "name": "http-status-anot",
-  "version": "1.0.0",
+  "name": "http-status-response-anot",
+  "version": "0.1.7-beta",
   "description": "",
-  "main": "dist/es5/index.js",
+  "main": "dist/es5/index.cjs",
   "module": "dist/es6/index.js",
   "types": "dist/d.ts/index.d.ts",
   "type": "module",
@@ -11,19 +11,21 @@
     "build:es5": "tsc --project tsconfig.es5.json",
     "build:es6": "tsc --project tsconfig.es6.json",
     "build:ts": "tsc --project tsconfig.d.ts.json",
-    "build": "npm run build:es5 && npm run build:es6 && npm run build:ts",
-    "test:es5": "node dist/es5/es.js",
-    "test:es6": "node dist/es6/es.js",
-    "test:ts": "npx tsx src/es.ts",
-    "test:all": "npm run test:es5 && npm run test:es6 && npm run test:ts"
+    "build": "npm run build:es5 && npm run build:es6 && npm run build:ts && npm run rename-to-cjs",
+    "rename-to-cjs": "node -e \"const fs=require('fs');const path=require('path');const dir='./dist/es5';fs.readdirSync(dir).forEach(f=>{if(f.endsWith('.js')){fs.renameSync(path.join(dir,f),path.join(dir,f.replace('.js','.cjs')))}})\""
   },
   "exports": {
     ".": {
-      "require": "./dist/es5/index.js",
+      "require": "./dist/es5/index.cjs",
       "import": "./dist/es6/index.js",
       "types": "./dist/d.ts/index.d.ts"
     }
   },
+  "keywords": [
+    "http",
+    "status",
+    "response"
+  ],
   "author": "kyanh",
   "license": "ISC",
   "devDependencies": {
@@ -35,6 +37,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "dist": "^0.1.2"
+    "dist": "^0.1.2",
+    "rename": "^1.0.4"
   }
 }
