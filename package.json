@@ -1,7 +1,10 @@
 {
-  "name": "http-status-response-anot",
-  "version": "0.1.7-beta",
-  "description": "",
+  "name": "@anot/http-response-builder",
+  "version": "0.1.2",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "A robust and type-safe library for constructing HTTP responses with optional paging and metadata. Designed for TypeScript and JavaScript, it ensures correct typing while simplifying the creation of various HTTP response types.",
   "main": "dist/es5/index.cjs",
   "module": "dist/es6/index.js",
   "types": "dist/d.ts/index.d.ts",
@@ -23,8 +26,14 @@
   },
   "keywords": [
     "http",
-    "status",
-    "response"
+    "response",
+    "javascript",
+    "typescript",
+    "nodejs",
+    "api",
+    "rest",
+    "http-status",
+    "response-builder"
   ],
   "author": "kyanh",
   "license": "ISC",
