@@ -108,8 +108,12 @@ var photoList = [
 ];
 
 app.get("/api/photo/list", function (req, res, next) {
-  const results = HttpResponseBuilder.ok().setData(photoList).setMessage("Get photo list");
-  res.json(results);
+  const results = HttpResponseBuilder.ok()
+          .setData(photoList)
+          .setMessage("Successfully fetched photo list")
+          .setMetadata({ timestamp: new Date() })
+          .build();
+  res.json(results)
 });
 ```
 
@@ -141,6 +145,21 @@ const response = HttpResponseBuilder.ok<UserDTO>()
     .build();
 ```
 
+## Current User Support
+
+You can add current user information to your response:
+
+```typescript
+const currentUser = new CurrentUser("user-id"); // you can use user id by number or string
+const response = HttpResponseBuilder.ok<UserDTO[]>()
+        .setData(currentUser.setExtraData({
+          username : "username"
+        }))
+        .build();
+```
+
+
+
 ## Predefined Status Codes
 
 The builder includes methods for common HTTP status codes:
@@ -171,16 +190,21 @@ const response = HttpResponseBuilder.customResponse<UserDTO>()
 The response object has the following structure:
 
 ```typescript
+
 {
-    status: number;      // HTTP status code
-    message: string;     // Status message
-    data?: T;           // Response data (generic type)
-    paging?: {          // Optional pagination info
-        page: number;
-        size: number;
-        total: number;
-    };
-    metadata?: Record<string, any>;  // Optional additional metadata
+  status: number;      // HTTP status code
+  message: string;     // Status message
+  data ? : T;           // Response data (generic type)
+  paging ? : {          // Optional pagination info
+    page: number;
+    size: number;
+    total: number;
+  };
+  metadata ? : Record<string, any>;  // Optional additional metadata
+  currentUser ? : {      // Optional current user info 
+      id: number | string;
+      extraData: Record<string, any>;
+  }
 }
 ```
 
